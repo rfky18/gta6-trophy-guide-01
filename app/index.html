@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leonida Ledger — GTA VI Trophy Guide &amp; Tracker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark">LL</span><div><h1>LEONIDA LEDGER</h1><p>GTA VI &middot; PlayStation 5 &middot; 55 trophies &middot; 1 platinum &middot; 2 gold &middot; 6 silver &middot; 46 bronze &middot; unofficial fan guide, works offline</p></div></div>
+  <div class="score"><b id="earnedBig">17 / 55</b><span>earned</span><span class="tally" id="tally">P 0/1 &middot; G 0/2 &middot; S 0/6 &middot; B 17/46</span></div>
+  <nav class="tabs" id="tabs">
+    <button data-view="ledger" class="on">Ledger</button>
+    <button data-view="roadmap">Roadmap</button>
+    <button data-view="missables">Missables</button>
+    <button data-view="sources">Sources &amp; audit</button>
+  </nav>
+  <div class="topbtns">
+    <button id="spoilerBtn" type="button">Spoilers: shown</button>
+    <button id="exportBtn" type="button">Export</button>
+    <label class="importBtn">Import <input id="importFile" type="file" accept="application/json,.json"></label>
+    <span class="saved">Saved in this browser</span>
+  </div>
+</header>
+<div class="audit" id="audit"></div>
+<div class="warn" id="warnBar"></div>
+<main id="viewLedger" class="view">
+  <section class="col left">
+    <div class="filters" id="kindFilters"></div>
+    <div class="tools">
+      <input id="search" type="search" placeholder="Search trophies..." aria-label="Search trophies">
+      <select id="sortSel" aria-label="Sort"><option value="id">Sort: list order</option><option value="name">Sort: name A–Z</option><option value="grade">Sort: grade</option><option value="stage">Sort: roadmap stage</option></select>
+      <label class="chk"><input id="unearnedOnly" type="checkbox"> Unearned only</label>
+    </div>
+    <div class="nextup"><h3>NEXT UP</h3><div id="nextUp"></div></div>
+    <ul class="list" id="list"></ul>
+    <p class="count" id="shownCount"></p>
+  </section>
+  <section class="col mid" id="detail"></section>
+  <aside class="col right" id="sourcesPanel"></aside>
+</main>
+<main id="viewRoadmap" class="view hidden">
+  <section class="roadmap" id="roadmap"></section>
+  <aside class="planner" id="planner"></aside>
+</main>
+<main id="viewMissables" class="view hidden">
+  <section class="miss" id="missables"></section>
+</main>
+<main id="viewSources" class="view hidden">
+  <section class="srcpage" id="sourcesPage"></section>
+</main>
+<footer>Leonida Ledger — unofficial fan guide. Trophy names, descriptions and grades as PlayStation publishes them. Guides in our own words, cited, never copied. Sources read 20 Nov 2026. No Rockstar artwork or logo is used. Works offline; nothing is fetched at run time except the guide's own files.</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>
