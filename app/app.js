@@ -73,10 +73,28 @@ function auditNumbers() {
     disagree: 2, // The Shootist (range count) + Positive Mental Attitude (18 vs 15)
   };
 }
+const ROAD100 = { 15: 300, 17: 42, 28: 15, 31: 100, 32: 70, 35: 200 };
+function goalProgress() {
+  // Vice Got a Price!: earned out of the other 54. A Long Road: mean completion
+  // across the six 100%-checklist lines this guide tracks live counters for
+  // (stunts 300, range golds 42, meditations 15, WAiNK 100, challenges 70,
+  // vehicles 200) — the demo counts give 37%.
+  const keys = Object.keys(ROAD100).map(Number);
+  const sum = keys.reduce((a, id) => a + Math.min(1, (state.counts[id] || 0) / ROAD100[id]), 0);
+  return {
+    platinum: { done: state.earned.size, total: 54, pct: Math.round(state.earned.size / 54 * 100) },
+    road: { pct: Math.round(sum / keys.length * 100), lines: keys.length },
+  };
+}
 function renderAudit() {
   const a = auditNumbers();
-  el('audit').innerHTML = 'AUDIT <b>55 official</b><span class="sep">·</span>1P 2G 6S 46B<span class="sep">·</span><b>' + a.hidden + ' hidden</b><span class="sep">·</span><b>' + a.guidesCited + '/55 guides cite a source</b><span class="sep">·</span><b>' + a.cited + '/' + a.steps + ' steps cited</b><span class="sep">·</span><b>7 sources read 20 Nov 2026</b><span class="sep">·</span><b>' + a.possible + ' possibly missable</b><span class="sep">·</span>' + a.watch + ' watch<span class="sep">·</span>' + a.unconfirmed + ' unconfirmed<span class="sep">·</span>' + a.partial + ' partial<span class="sep">·</span>' + a.disagree + ' disagree<span class="sep">·</span>' + a.single + ' single-source'
-    + '<br>CITED BY ' + [1, 2, 3, 4, 5, 6, 7].map(n => '[' + n + '] <b>' + citedBy(n) + '/55</b>').join('<span class="sep">·</span>');
+  el('audit').innerHTML = 'AUDIT <b>55 official</b><span class="sep">·</span>1P 2G 6S 46B<span class="sep">·</span><b>' + a.hidden + ' hidden</b><span class="sep">·</span><b>' + a.guidesCited + '/55 cite a source</b><span class="sep">·</span><b>' + a.cited + '/' + a.steps + ' steps cited</b><span class="sep">·</span><b>7 sources</b><span class="sep">·</span><b>' + a.possible + ' possibly missable</b><span class="sep">·</span>' + a.watch + ' watch<span class="sep">·</span>' + a.unconfirmed + ' unconfirmed<span class="sep">·</span>' + a.disagree + ' disagree<span class="sep">·</span>CITED BY ' + [1, 2, 3, 4, 5, 6, 7].map(n => '[' + n + '] <b>' + citedBy(n) + '/55</b>').join('<span class="sep">·</span>');
+}
+function citeCompact(nums) { return nums.length ? '[' + nums.join('-') + ']' : ''; }
+function renderGoalbar() {
+  const g = goalProgress();
+  el('goalbar').innerHTML = '<span class="gb"><span class="gl"><b>GOAL · Vice Got a Price!</b> ' + g.platinum.done + '/54 trophies · ' + g.platinum.pct + '%</span><span class="bar"><i style="width:' + g.platinum.pct + '%"></i></span></span>'
+    + '<span class="gb"><span class="gl"><b>A Long Road</b> ' + g.road.pct + '% of tracked 100% lines</span><span class="bar bar-gold"><i style="width:' + g.road.pct + '%"></i></span></span>';
 }
 function renderRoadstrip() {
   const label = ['GOAL', 'Ch. 1', 'Ch. 2–3', 'Ch. 4', 'Ch. 5 &amp; finale', 'Side chains', 'Cleanup: act.&amp;coll.', 'Cleanup: money'];
@@ -129,19 +147,29 @@ function flagsHtml(t) {
   if (t.hidden) h += ' <span class="tag tag-hid">HIDDEN ON PSN</span>';
   return h;
 }
+function listFlags(t) {
+  // Checklist rows show only the actionable flags; HIDDEN ON PSN lives in the
+  // detail panel — in v2 it ate the row width and truncated the description.
+  let h = '';
+  if (t.missable === 'possible') h += ' <span class="tag tag-miss">POSSIBLY MISSABLE</span>';
+  if (t.watch) h += ' <span class="tag tag-watch">WATCH</span>';
+  if (t.unconfirmed) h += ' <span class="tag tag-unc">NOT PINNED DOWN YET</span>';
+  if (t.partial) h += ' <span class="tag tag-unc">PARTIAL</span>';
+  return h;
+}
 function renderList() {
   const list = filteredTrophies();
   el('list').innerHTML = list.map(t => {
     const earned = state.earned.has(t.id);
     const hid = isHiddenStory(t);
     const name = hid ? 'Story trophy — hidden' : esc(t.name);
-    const desc = hid ? 'Spoiler setting is on. Earn it or tap Reveal.' : esc(t.description);
+    const desc = hid ? 'Spoiler on — earn it or tap Reveal.' : esc(t.description);
     return '<li data-id="' + t.id + '" class="' + (state.selected === t.id ? 'sel' : '') + '">'
       + '<input type="checkbox" ' + (earned ? 'checked' : '') + ' data-earn="' + t.id + '" aria-label="Mark ' + esc(t.name) + ' earned">'
       + '<span class="g g-' + t.grade + '">' + gradeLetter(t.grade) + '</span>'
-      + '<span class="tx"><span class="nm">' + name + '</span>' + flagsHtml(t)
-      + ' <span class="ds">' + desc + '</span>'
-      + ' <span class="meta">' + citeList(trophySources(t)) + '</span></span>'
+      + '<span class="tx"><span class="ln1"><span class="nm">' + name + '</span>' + listFlags(t)
+      + ' <span class="meta">' + citeCompact(trophySources(t)) + '</span></span>'
+      + '<span class="ds">' + desc + '</span></span>'
       + (hid ? ' <button type="button" class="rv" data-reveal="' + t.id + '">Reveal</button>' : '')
       + '</li>';
   }).join('') || '<li>No trophies match this filter.</li>';
@@ -159,8 +187,12 @@ function renderList() {
     e.stopPropagation(); revealed.add(Number(b.dataset.reveal)); renderList();
   }));
   const next = trophies.filter(t => !state.earned.has(t.id))
-    .sort((a, b) => (a.id === 28 ? -1 : b.id === 28 ? 1 : a.stage - b.stage || a.id - b.id)).slice(0, 5);
-  el('nextUp').innerHTML = next.map(t => '<div class="nu"><b>' + STAGES[t.stage].title.split(' — ')[0] + '</b> ' + esc(t.name) + '</div>').join('') || '<div class="nu">All 55 earned — platinum time.</div>';
+    .sort((a, b) => (a.id === 28 ? -1 : b.id === 28 ? 1 : a.stage - b.stage || a.id - b.id)).slice(0, 8);
+  el('nextUp').innerHTML = next.map(t => {
+    const hid = isHiddenStory(t);
+    if (hid) return '<div class="nu"><b>' + STAGES[t.stage].title.split(' — ')[0] + '</b> Story trophy — hidden until earned.</div>';
+    return '<div class="nu"><b>' + STAGES[t.stage].title.split(' — ')[0] + '</b> ' + esc(t.name) + ' <span class="nd">— ' + esc(t.description) + '</span></div>';
+  }).join('') || '<div class="nu">All 55 earned — platinum time.</div>';
 }
 function selectTrophy(id) { state.selected = id; renderList(); renderDetail(); }
 function renderDetail() {
@@ -180,7 +212,7 @@ function renderDetail() {
     countHtml = '<div class="counter"><b>YOUR COUNT</b><button type="button" id="cntDown" aria-label="Decrease count">−</button><b>' + cur + ' / ' + t.count.toLocaleString() + '</b><button type="button" id="cntUp" aria-label="Increase count">+</button><span>' + esc(t.countUnit || '') + '</span><span class="bar"><i style="width:' + pct + '%"></i></span></div>';
   }
   el('detail').innerHTML = '<button type="button" id="markBtn" class="markbtn ' + (earned ? 'done' : '') + '">' + (earned ? '✓ Earned' : 'Mark earned') + '</button>'
-    + '<span class="g g-' + t.grade + '">' + gradeLetter(t.grade) + '</span> <b>' + t.grade.toUpperCase() + '</b> <span class="sub">· TROPHY #' + t.id + ' OF 55 · ' + KIND_LABEL[t.kind] + ' · ' + STAGES[t.stage].title + '</span>'
+    + '<span class="g g-' + t.grade + '">' + gradeLetter(t.grade) + '</span> <b>' + t.grade.toUpperCase() + '</b> <span class="sub">· TROPHY #' + t.id + ' OF 55 · ' + KIND_LABEL[t.kind] + ' · ' + STAGES[t.stage].title.split(' — ')[0] + '</span>'
     + '<h2>' + (hid ? 'Story trophy — hidden until earned' : esc(t.name)) + '</h2>'
     + '<div class="sub">' + flagsHtml(t) + '</div>'
     + '<div class="off"><b>OFFICIAL DESCRIPTION</b><p>“' + esc(t.description) + '”</p></div>'
@@ -225,12 +257,22 @@ function renderRoadmap() {
   el('roadmap').innerHTML = STAGES.map(st => {
       const items = trophies.filter(t => t.stage === st.n);
       const done = items.filter(t => state.earned.has(t.id)).length;
-      return '<div class="stage"><h3>' + esc(st.title) + ' <span>' + done + '/' + items.length + ' earned</span></h3><p>' + esc(st.note) + '</p><ul>'
+      let bars = '';
+      if (st.n === 0) {
+        const g = goalProgress();
+        bars = '<div class="gbar"><span><b>Vice Got a Price!</b> ' + g.platinum.done + '/54 trophies · ' + g.platinum.pct + '%</span><span class="bar"><i style="width:' + g.platinum.pct + '%"></i></span></div>'
+          + '<div class="gbar"><span><b>A Long Road</b> ' + g.road.pct + '% of tracked 100% lines</span><span class="bar bar-gold"><i style="width:' + g.road.pct + '%"></i></span></div>';
+      }
+      return '<div class="stage"><h3>' + esc(st.title) + ' <span>' + done + '/' + items.length + ' earned</span></h3><p>' + esc(st.note) + '</p>' + bars + '<ul>'
         + items.map(t => '<li class="' + (state.earned.has(t.id) ? 'done' : '') + '">' + (state.earned.has(t.id) ? '✓ ' : '○ ') + esc(t.name) + ' <span class="cite">' + citeList(trophySources(t)) + '</span></li>').join('') + '</ul></div>';
     }).join('');
   const next = trophies.filter(t => !state.earned.has(t.id))
     .sort((a, b) => (a.id === 28 ? -1 : b.id === 28 ? 1 : a.stage - b.stage || a.id - b.id)).slice(0, 8);
-  el('planner').innerHTML = '<h3>NEXT UP — IN ROADMAP ORDER</h3><ol>' + next.map(t => '<li><b>' + STAGES[t.stage].title.split(' — ')[0] + '</b> — ' + esc(t.name) + '</li>').join('') + '</ol>'
+  el('planner').innerHTML = '<h3>NEXT UP — IN ROADMAP ORDER</h3><ol>' + next.map(t => {
+    const hid = isHiddenStory(t);
+    if (hid) return '<li><b>' + STAGES[t.stage].title.split(' — ')[0] + '</b> — Story trophy — hidden until earned.</li>';
+    return '<li><b>' + STAGES[t.stage].title.split(' — ')[0] + '</b> — ' + esc(t.name) + ' <span class="nd">— ' + esc(t.description) + '</span></li>';
+  }).join('') + '</ol>'
     + '<h3>PLATINUM MATH</h3><p class="foot">Story 60–80 h · 100% checklist ~100 h · cleanup ~10 h · ~200 h total, difficulty 4/10, 1 playthrough, 0 online trophies, no mission replay, 15 manual save slots. [1][3]</p>'
     + '<h3>SAVE RULE</h3><p class="foot">Keep a manual save at the start of every chapter and one untouched save before the final mission. Cheats disable trophies and saving — keep them off your trophy save. [1][2]</p>';
 }
@@ -244,7 +286,7 @@ function renderMissables() {
     + poss.map(t => card(t, 'POSSIBLY MISSABLE', t.id === 28 ? 'The Chapter 1 balcony meditation disappears with the chapter, and nobody has confirmed whether “every spot” includes it. Do it in Chapter 1 and keep a Chapter 1 save until the trophy pops.' : 'Race Against Yago (Chapter 3) carries an hourglass icon. Save first, then race it the moment it appears.')).join('')
     + '<div class="card"><h3>5 WATCH — SINGLE-SOURCE WARNING</h3><p>TechWiser (via eGamers) reports the stranger chains behind the five hidden side trophies have windows linked to story progress. Only one source gives that warning, so we flag it as WATCH, not as confirmed missable. Start each chain as soon as it unlocks. [4]</p></div>'
     + watch.map(t => card(t, 'WATCH', esc(t.description) + ' Start the chain as soon as it unlocks; the timing warning is single-source.')).join('')
-    + '<div class="card"><h3>4 UNCONFIRMED + 2 PARTIAL</h3><p>Five hidden trophies have no confirmed trigger at launch, per OutputLag; we count 4 as fully unconfirmed and 2 as partial (the description gives a method, the exact trigger is not pinned down). [2][3]</p></div>'
+    + '<div class="card"><h3>' + unc.length + ' UNCONFIRMED + ' + part.length + ' PARTIAL</h3><p>Five hidden trophies had no confirmed trigger at launch, per OutputLag. PowerPyx has since confirmed three of them — In The Beginning… (Apple Martini at the Ocean View Rooftop Bar), Capital Offense (the blue Banshee) and The Truth Is Out There (the UFO easter egg) — leaving ' + unc.length + ' unconfirmed and ' + part.length + ' partial (the description gives a method, the exact trigger is not pinned down). [1][2][3]</p></div>'
     + unc.map(t => card(t, 'NOT PINNED DOWN YET', esc(t.short))).join('')
     + part.map(t => card(t, 'PARTIAL', esc(t.short))).join('');
 }
@@ -265,6 +307,7 @@ function renderHeader() {
   // The missable banner belongs to the ledger; the stage strip duplicates the
   // roadmap page, so each hides where it would only eat vertical space.
   el('warnBar').style.display = state.view === 'ledger' ? '' : 'none';
+  el('goalbar').style.display = state.view === 'ledger' ? '' : 'none';
   el('roadstrip').style.display = state.view === 'roadmap' ? 'none' : '';
   el('tabs').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.view === state.view));
   el('viewLedger').classList.toggle('hidden', state.view !== 'ledger');
@@ -273,7 +316,7 @@ function renderHeader() {
   el('viewSources').classList.toggle('hidden', state.view !== 'sources');
 }
 function renderAll() {
-  renderHeader(); renderAudit(); renderRoadstrip(); renderFilters(); renderList(); renderDetail(); renderSourcesPanel();
+  renderHeader(); renderAudit(); renderGoalbar(); renderRoadstrip(); renderFilters(); renderList(); renderDetail(); renderSourcesPanel();
   renderRoadmap(); renderMissables(); renderSourcesPage();
 }
 function exportProgress() {
