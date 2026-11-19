@@ -7,7 +7,7 @@ const DEMO_COUNTS = { 15: 120, 17: 18, 28: 6, 31: 40, 32: 22, 35: 55 };
 const KIND_LABEL = { all: 'All', goal: 'Goal', story: 'Story', side: 'Side chains', collectibles: 'Collectibles', activities: 'Activities', crime: 'Crime', riddles: 'Riddles', money: 'Money', feats: 'Feats', online: 'Online' };
 const KIND_ORDER = ['all', 'story', 'missable', 'collectibles', 'activities', 'side', 'crime', 'riddles', 'money', 'feats', 'goal', 'online'];
 const STAGES = [
-  { n: 0, title: 'S0 — GOAL: 100% and the platinum', note: 'The two that only fall when everything else does.' },
+  { n: 0, title: 'S0 — GOAL: 100% and the platinum', note: 'Vice Got a Price! pops when the other 54 are done. A Long Road (100%) is the hardest — about 200 hours, difficulty 4/10. [1][3]' },
   { n: 1, title: 'S1 — Opening & Chapter 1', note: 'Do the balcony meditation before the chapter ends.' },
   { n: 2, title: 'S2 — Chapters 2–3', note: 'Switching, Scooter Bros, Snap Gun, Race Against Yago.' },
   { n: 3, title: 'S3 — Chapter 4', note: 'Bank vaults open near the end of this chapter.' },
@@ -33,7 +33,7 @@ function loadState() {
     s = {
       earned: new Set(demo ? DEMO_EARNED : []),
       counts: demo ? { ...DEMO_COUNTS } : {},
-      spoilers: 'shown',
+      spoilers: 'hidden',
     };
   }
   // URL params override saved state, so deep links (and screenshots) are deterministic.
@@ -75,7 +75,17 @@ function auditNumbers() {
 }
 function renderAudit() {
   const a = auditNumbers();
-  el('audit').innerHTML = 'AUDIT <b>55 official</b><span class="sep">·</span>1P 2G 6S 46B<span class="sep">·</span><b>' + a.hidden + ' hidden</b><span class="sep">·</span><b>' + a.guidesCited + '/55 guides cite a source</b><span class="sep">·</span><b>' + a.cited + '/' + a.steps + ' steps cited</b><span class="sep">·</span><b>7 sources read 20 Nov 2026</b><span class="sep">·</span><b>' + a.possible + ' possibly missable</b><span class="sep">·</span>' + a.watch + ' watch<span class="sep">·</span>' + a.unconfirmed + ' unconfirmed<span class="sep">·</span>' + a.partial + ' partial<span class="sep">·</span>' + a.disagree + ' disagree<span class="sep">·</span>' + a.single + ' single-source';
+  el('audit').innerHTML = 'AUDIT <b>55 official</b><span class="sep">·</span>1P 2G 6S 46B<span class="sep">·</span><b>' + a.hidden + ' hidden</b><span class="sep">·</span><b>' + a.guidesCited + '/55 guides cite a source</b><span class="sep">·</span><b>' + a.cited + '/' + a.steps + ' steps cited</b><span class="sep">·</span><b>7 sources read 20 Nov 2026</b><span class="sep">·</span><b>' + a.possible + ' possibly missable</b><span class="sep">·</span>' + a.watch + ' watch<span class="sep">·</span>' + a.unconfirmed + ' unconfirmed<span class="sep">·</span>' + a.partial + ' partial<span class="sep">·</span>' + a.disagree + ' disagree<span class="sep">·</span>' + a.single + ' single-source'
+    + '<br>CITED BY ' + [1, 2, 3, 4, 5, 6, 7].map(n => '[' + n + '] <b>' + citedBy(n) + '/55</b>').join('<span class="sep">·</span>');
+}
+function renderRoadstrip() {
+  const label = ['GOAL', 'Ch. 1', 'Ch. 2–3', 'Ch. 4', 'Ch. 5 &amp; finale', 'Side chains', 'Cleanup: act.&amp;coll.', 'Cleanup: money'];
+  el('roadstrip').innerHTML = STAGES.map(st => {
+    const items = trophies.filter(t => t.stage === st.n);
+    const done = items.filter(t => state.earned.has(t.id)).length;
+    return '<button type="button" data-stage="' + st.n + '">S' + st.n + ' ' + label[st.n] + ' <b>' + done + '/' + items.length + '</b></button>';
+  }).join('');
+  el('roadstrip').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { state.view = 'roadmap'; renderAll(); }));
 }
 function renderWarn() {
   el('warnBar').innerHTML = '&#9888; 2 POSSIBLY MISSABLE — Positive Mental Attitude: the Chapter 1 balcony meditation may vanish after Chapter 1 ends — do it in Chapter 1. <button type="button" id="warnShow">Show it</button>';
@@ -124,16 +134,16 @@ function renderList() {
   el('list').innerHTML = list.map(t => {
     const earned = state.earned.has(t.id);
     const hid = isHiddenStory(t);
-    const name = hid ? 'Story trophy — hidden until earned' : esc(t.name);
+    const name = hid ? 'Story trophy — hidden' : esc(t.name);
     const desc = hid ? 'Spoiler setting is on. Earn it or tap Reveal.' : esc(t.description);
     return '<li data-id="' + t.id + '" class="' + (state.selected === t.id ? 'sel' : '') + '">'
       + '<input type="checkbox" ' + (earned ? 'checked' : '') + ' data-earn="' + t.id + '" aria-label="Mark ' + esc(t.name) + ' earned">'
       + '<span class="g g-' + t.grade + '">' + gradeLetter(t.grade) + '</span>'
-      + '<span><span class="nm">' + name + '</span>' + flagsHtml(t)
-      + '<br><span class="ds">' + desc + '</span>'
-      + '<br><span class="meta">#' + t.id + ' · ' + KIND_LABEL[t.kind] + ' · ' + STAGES[t.stage].title.split(' — ')[0] + ' · ' + citeList(trophySources(t)) + '</span>'
-      + (hid ? ' <button type="button" data-reveal="' + t.id + '">Reveal</button>' : '')
-      + '</span></li>';
+      + '<span class="tx"><span class="nm">' + name + '</span>' + flagsHtml(t)
+      + ' <span class="ds">' + desc + '</span>'
+      + ' <span class="meta">' + citeList(trophySources(t)) + '</span></span>'
+      + (hid ? ' <button type="button" class="rv" data-reveal="' + t.id + '">Reveal</button>' : '')
+      + '</li>';
   }).join('') || '<li>No trophies match this filter.</li>';
   el('shownCount').textContent = list.length + ' shown · ' + state.earned.size + ' of 55 earned';
   el('list').querySelectorAll('[data-earn]').forEach(cb => cb.addEventListener('change', () => {
@@ -193,8 +203,17 @@ function citedBy(n) {
   if (n === 7) return trophies.length;
   return trophies.filter(t => trophySources(t).includes(n)).length;
 }
+function sourcesByCited() {
+  // Most-cited guide first; [7] is the official list itself — it underlies every
+  // entry's name/description/grade, so it sits last, not first.
+  return sources.slice().sort((a, b) => {
+    if (a.n === 7) return 1;
+    if (b.n === 7) return -1;
+    return citedBy(b.n) - citedBy(a.n);
+  });
+}
 function renderSourcesPanel() {
-  el('sourcesPanel').innerHTML = '<h3>SOURCES — READ 20 NOV 2026</h3>' + sources.map(s => {
+  el('sourcesPanel').innerHTML = '<h3>SOURCES — READ 20 NOV 2026</h3>' + sourcesByCited().map(s => {
     const n = citedBy(s.n), pct = Math.round(n / 55 * 100);
     return '<div class="src"><b>[' + s.n + '] ' + esc(s.name) + '</b> — ' + esc(s.title)
       + '<br><span class="u">' + esc(s.url) + '</span>'
@@ -203,8 +222,7 @@ function renderSourcesPanel() {
   }).join('') + '<p class="foot">Every step cites at least one source. A link opens only if you follow it — the app fetches nothing.</p>';
 }
 function renderRoadmap() {
-  el('roadmap').innerHTML = '<div class="stage"><h3>GOAL — 100% AND THE PLATINUM <span>' + state.earned.size + '/55 earned · ' + Math.round(state.earned.size / 55 * 100) + '%</span></h3><p>Vice Got a Price! pops when the other 54 are done. A Long Road (100%) is the hardest trophy — about 200 hours, difficulty 4/10. [1][3]</p></div>'
-    + STAGES.map(st => {
+  el('roadmap').innerHTML = STAGES.map(st => {
       const items = trophies.filter(t => t.stage === st.n);
       const done = items.filter(t => state.earned.has(t.id)).length;
       return '<div class="stage"><h3>' + esc(st.title) + ' <span>' + done + '/' + items.length + ' earned</span></h3><p>' + esc(st.note) + '</p><ul>'
@@ -235,7 +253,7 @@ function renderSourcesPage() {
   el('sourcesPage').innerHTML = '<div class="stage"><h3>SOURCES &amp; AUDIT</h3><p class="big">AUDIT — <b>55 official</b> · 1P 2G 6S 46B · <b>' + a.hidden + ' hidden</b> · <b>' + a.guidesCited + '/55 guides cite a source</b> · <b>' + a.cited + '/' + a.steps + ' steps cited</b> · <b>7 sources read 20 Nov 2026</b> · ' + a.possible + ' possibly missable · ' + a.watch + ' watch · ' + a.unconfirmed + ' unconfirmed · ' + a.partial + ' partial · ' + a.disagree + ' disagree · ' + a.single + ' single-source.</p>'
     + '<p class="big">Where the numbers come from: the 55 names, descriptions and grades are the official list (Exophase / kit). “Sources disagree” is shown, not hidden: The Shootist (2 ranges per OutputLag, 12 per GTAZone) and Positive Mental Attitude (18 meditations for the trophy, 15 on the 100% list). “Not pinned down yet” means no guide we read has confirmed the trigger.</p></div>'
     + '<div class="stage"><h3>THE 7 SOURCES</h3><table><tr><th>#</th><th>Source</th><th>What it gave this guide</th><th>Cited by</th></tr>'
-    + sources.map(s => '<tr><td>[' + s.n + ']</td><td><b>' + esc(s.name) + '</b><br>' + esc(s.title) + '<br><span class="cite">' + esc(s.url) + '</span></td><td>' + esc(s.note) + '</td><td>' + citedBy(s.n) + ' / 55</td></tr>').join('') + '</table></div>'
+    + sourcesByCited().map(s => '<tr><td>[' + s.n + ']</td><td><b>' + esc(s.name) + '</b><br>' + esc(s.title) + '<br><span class="cite">' + esc(s.url) + '</span></td><td>' + esc(s.note) + '</td><td>' + citedBy(s.n) + ' / 55</td></tr>').join('') + '</table></div>'
     + '<div class="stage"><h3>EXPORT / IMPORT</h3><p class="big">Progress is saved in this browser (localStorage) the moment you tick a trophy or move a counter. <b>Export</b> downloads your progress as JSON; <b>Import</b> reads that file back on any machine. Use the buttons in the header. No account, no server, no network.</p></div>';
 }
 function renderHeader() {
@@ -244,6 +262,10 @@ function renderHeader() {
   trophies.forEach(t => { if (state.earned.has(t.id)) g[t.grade]++; });
   el('tally').textContent = 'P ' + g.platinum + '/1 · G ' + g.gold + '/2 · S ' + g.silver + '/6 · B ' + g.bronze + '/46';
   el('spoilerBtn').textContent = 'Spoilers: ' + state.spoilers;
+  // The missable banner belongs to the ledger; the stage strip duplicates the
+  // roadmap page, so each hides where it would only eat vertical space.
+  el('warnBar').style.display = state.view === 'ledger' ? '' : 'none';
+  el('roadstrip').style.display = state.view === 'roadmap' ? 'none' : '';
   el('tabs').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.view === state.view));
   el('viewLedger').classList.toggle('hidden', state.view !== 'ledger');
   el('viewRoadmap').classList.toggle('hidden', state.view !== 'roadmap');
@@ -251,7 +273,7 @@ function renderHeader() {
   el('viewSources').classList.toggle('hidden', state.view !== 'sources');
 }
 function renderAll() {
-  renderHeader(); renderAudit(); renderFilters(); renderList(); renderDetail(); renderSourcesPanel();
+  renderHeader(); renderAudit(); renderRoadstrip(); renderFilters(); renderList(); renderDetail(); renderSourcesPanel();
   renderRoadmap(); renderMissables(); renderSourcesPage();
 }
 function exportProgress() {

@@ -384,15 +384,15 @@
    "count": 42,
    "countUnit": "gold medals",
    "stage": 6,
-   "sources": [2, 3, 5],
+   "sources": [1, 2, 3, 5],
    "short": "Earn gold in all 42 Shooting Range challenges. Sources disagree on how many ranges hold them — 2 per OutputLag, 12 per GTAZone — but all agree on 42 golds. [2][5]",
-   "guide": "Earn a gold medal in all 42 Shooting Range challenges. The guides agree on the total of 42 golds but disagree on the range count: OutputLag reports two shooting ranges holding 42 golds between them, while GTAZone counts 42 golds across 12 ranges. Either way, gold every challenge; the 100% checklist also needs all 42. [2][3][5]",
+   "guide": "Earn a gold medal in all 42 Shooting Range challenges. The guides agree on the total of 42 golds but disagree on the range count: OutputLag reports two shooting ranges holding 42 golds between them, while GTAZone counts 42 golds across 12 ranges. Either way, gold every challenge; the 100% checklist also needs all 42. [1][2][3][5]",
    "steps": [
     {"t": "Find a shooting range and work through its challenges, aiming for gold on each.", "s": [2, 3]},
     {"t": "Repeat a challenge until you hit the gold threshold — silver or bronze does not count.", "s": [3]},
     {"t": "Sources disagree on the range count (2 per [2], 12 per [5]); trust the in-game counter, not the range count.", "s": [2, 5]},
     {"t": "Gold all 42 challenges; the trophy pops on the last gold.", "s": [2, 3]},
-    {"t": "The 100% checklist also needs all 42, so this trophy is never wasted effort.", "s": [3]}
+    {"t": "The 100% checklist also needs all 42, so this trophy is never wasted effort.", "s": [1, 3]}
    ]
   },
   {
@@ -570,7 +570,7 @@
    "count": 8,
    "countUnit": "strands",
    "stage": 5,
-   "sources": [2, 5, 3],
+   "sources": [1, 2, 3, 5],
    "short": "Complete 8 qualifying stranger mission strands. Only some strands count — Kirk, Kyle, Yago and Pilot Pete do; Moses, Tyrone, Yasmani, Andy and Billy do not. POSSIBLY MISSABLE: Race Against Yago (Chapter 3) is time-sensitive. [5][2]",
    "guide": "Complete 8 qualifying Strangers & Freaks strands. Not every stranger chain counts: GTAZone lists Kirk, Kyle, Yago and Pilot Pete as counting, while Moses, Tyrone, Yasmani, Andy and Billy do not (they have their own trophies). The timing risk is Race Against Yago in Chapter 3 — it carries an hourglass icon, so save first and race it the moment it appears. Check the trophy's progress counter after each strand you finish. [5][2][3]",
    "steps": [
@@ -578,7 +578,7 @@
     {"t": "Count on Kirk, Kyle, Yago and Pilot Pete; Moses, Tyrone, Yasmani, Andy and Billy do not count toward the 8.", "s": [5]},
     {"t": "When Race Against Yago appears in Chapter 3 (hourglass icon), save first, then race it at once — it is time-sensitive.", "s": [2]},
     {"t": "Keep finishing qualifying strands until the counter reads 8 of 8.", "s": [2, 3]},
-    {"t": "This trophy is not part of the 100% checklist, so finish it in cleanup if it is still open.", "s": [3]}
+    {"t": "This trophy is not part of the 100% checklist, so finish it in cleanup if it is still open.", "s": [1, 3]}
    ]
   },
   {
@@ -647,12 +647,11 @@
    "steps": [
     {"t": "Chapter 1, the morning after the mission Down to Earth: find Lucia in the kitchen at Jason's house.", "s": [1, 3]},
     {"t": "Follow her to the balcony and accept the optional meditation prompt. It adds 1 to the counter, though it is not a marked spot.", "s": [1, 2]},
-    {"t": "Keep a Chapter 1 manual save until this trophy has popped.", "s": [2]},
+    {"t": "Keep a Chapter 1 manual save until this trophy has popped.", "s": [1, 2]},
     {"t": "At the marked spots, meditate with both characters: each spot then counts twice.", "s": [1, 3]},
     {"t": "The last one needs both leads playable, which opens after Coffee Break in Chapter 2.", "s": [1]},
     {"t": "Track it under Progress > Collections > Exploration > Meditations.", "s": [1]},
-    {"t": "Counts differ: guides say 18 for the trophy while the 100% list stops at 15.", "s": [3, 4]},
-    {"t": "The final spot (Mount Kalaga summit) only appears once the other spots are done — do it last.", "s": [4]}
+    {"t": "Counts differ: guides say 18 for the trophy while the 100% list stops at 15.", "s": [1, 3, 4]}
    ]
   },
   {
@@ -926,15 +925,15 @@
    "count": 5,
    "countUnit": "vaults",
    "stage": 3,
-   "sources": [2, 3, 5],
+   "sources": [1, 2, 3, 5],
    "short": "Rob 5 bank vaults and escape, out of 8. Vaults unlock through the optional Chapter 4 mission That's Where The Money Is. Bring your partner — you cannot carry all the bags alone. [2]",
-   "guide": "Rob 5 of the 8 bank vaults and escape. Vaults unlock through That's Where The Money Is, an optional mission near the end of Chapter 4: tail an armored security van to a large bank and get into the vault while the guard has it open. Bring your partner — you cannot carry all the bags alone. Vault jobs give you a 4-star Wanted Level straight away, so escaping one with your partner also earns Hot Together. The 100% checklist needs all 8 vaults. [2][3][5]",
+   "guide": "Rob 5 of the 8 bank vaults and escape. Vaults unlock through That's Where The Money Is, an optional mission near the end of Chapter 4: tail an armored security van to a large bank and get into the vault while the guard has it open. Bring your partner — you cannot carry all the bags alone. Vault jobs give you a 4-star Wanted Level straight away, so escaping one with your partner also earns Hot Together. The 100% checklist needs all 8 vaults. [1][2][3][5]",
    "steps": [
     {"t": "Take the optional Chapter 4 mission That's Where The Money Is to unlock vaults.", "s": [2, 3]},
     {"t": "Tail an armored security van to a large bank and slip into the vault while the guard has it open.", "s": [2]},
     {"t": "Bring your partner — you cannot carry all the bags alone.", "s": [2]},
     {"t": "Escape with the loot; the trophy pops once you are clear of the heat, and Hot Together can pop on the same escape.", "s": [2]},
-    {"t": "Repeat until 5 vaults are done; 100% needs all 8.", "s": [3, 5]}
+    {"t": "Repeat until 5 vaults are done; 100% needs all 8.", "s": [1, 3, 5]}
    ]
   },
   {
